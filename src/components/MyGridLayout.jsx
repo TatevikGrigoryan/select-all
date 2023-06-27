@@ -1,6 +1,7 @@
 import RGL, {WidthProvider} from "react-grid-layout";
 import {useEffect, useState} from "react";
 import '../styles/components/myGridLayout.css'
+import position from '../assets/position.svg'
 
 const ReactGridLayout = WidthProvider(RGL);
 
@@ -64,7 +65,7 @@ const MyGridLayout = () => {
             item.y += diffY;
           }
 
-          return item
+          return item;
         })
 
         setLayout(newLayout);
@@ -112,9 +113,45 @@ const MyGridLayout = () => {
     return selectedElementsIdx.includes(i)
   }
 
-  const handleStop= (lay) => {
+  const handlePosUp = (i, event) => {
+    event.stopPropagation();
+    const newLay = layout.map(item => {
+      if (item.i === i.i) {
+        item.zIndex = item.zIndex < 10 ? ++item.zIndex : 10;
+      }
+
+      return item;
+    });
+
+    setLayout(newLay);
+  }
+
+  const handlePosDown = (i, event) => {
+    event.stopPropagation()
+    const newLay = layout.map(item => {
+      if (item.i === i.i) {
+        item.zIndex = item.zIndex > 1 ? --item.zIndex : 0;
+      }
+
+      return item;
+    });
+
+    setLayout(newLay);
+  }
+
+  const handleStop= (lay, oldItem, newItem) => {
     setDragStart(true);
-    setLayout(lay)
+    const newLayout = layout.map(item => {
+      if (item.i === newItem.i) {
+        return {
+          ...item,
+          ...newItem
+        }
+      }
+
+      return item
+    })
+    setLayout(newLayout)
   }
 
   return (
@@ -131,12 +168,24 @@ const MyGridLayout = () => {
       {layout.map((item, index) => (
         <div
           key={index}
-          style={{background: 'red'}}
+          style={{background: 'red', zIndex: item.zIndex ? item.zIndex : 'unset'}}
           data-grid={{...item, x: item.x, y: item.y, w: item.w, h: item.h,}}
-          className={isSelected(item.i) ? 'react-grid-selected' : ''}
+          // className={isSelected(item.i) ? 'react-grid-selected' : ''}
           onClick={(event) => handleSelect(item.i, event)}
         >
-          <div style={{height: '40px'}}>{item.i}</div>
+          <div className={isSelected(item.i) ? 'react-grid-selected' : ''}></div>
+          <div style={{height: '40px'}}>
+            {item.i}
+            {isSelected(item.i) && (
+              <div className='react-grid-position-block'>
+                <img src={position}/>
+                <div>
+                  <div onClick={(event) => handlePosUp(item, event)}>+</div>
+                  <div onClick={(event) => handlePosDown(item, event)}>-</div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       ))}
     </ReactGridLayout>
