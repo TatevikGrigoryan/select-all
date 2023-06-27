@@ -16,7 +16,6 @@ const MyGridLayout = () => {
   const generateLayout = () => {
     return Array.apply(null, new Array(10)).map(function (item, i) {
       return {
-        id: i,
         x: (i * 2) % 12,
         y: Math.floor(i / 6) * 5,
         w: 2,
@@ -60,7 +59,7 @@ const MyGridLayout = () => {
         const diffY = y - startPosition.y;
 
         const newLayout = JSON.parse(JSON.stringify(oldLayout)).map(item => {
-          if (selectedElementsIdx.includes(item.id)) {
+          if (selectedElementsIdx.includes(item.i)) {
             item.x += diffX;
             item.y += diffY;
           }
@@ -91,7 +90,7 @@ const MyGridLayout = () => {
     };
   }, [selectedElementsIdx,selectAllMode, layout, mouseDown, startPosition]);
 
-  const handleSelect = (id) => {
+  const handleSelect = (i) => {
     if (dragStart) {
       setDragStart(false);
 
@@ -100,21 +99,22 @@ const MyGridLayout = () => {
 
     let newSelectedItemIdx = [...selectedElementsIdx];
 
-    if (selectedElementsIdx.includes(id)) {
-      newSelectedItemIdx = selectedElementsIdx.filter(item => item !== id);
+    if (selectedElementsIdx.includes(i)) {
+      newSelectedItemIdx = selectedElementsIdx.filter(item => item !== i);
     } else {
-      newSelectedItemIdx.push(id);
+      newSelectedItemIdx.push(i);
     }
 
     setSelectedElementsIdx(newSelectedItemIdx)
   }
 
-  const isSelected = (id) => {
-    return selectedElementsIdx.includes(id)
+  const isSelected = (i) => {
+    return selectedElementsIdx.includes(i)
   }
 
   const handleStop= (lay) => {
     setDragStart(true);
+    setLayout(lay)
   }
 
   return (
@@ -133,8 +133,8 @@ const MyGridLayout = () => {
           key={index}
           style={{background: 'red'}}
           data-grid={{...item, x: item.x, y: item.y, w: item.w, h: item.h,}}
-          className={isSelected(item.id) ? 'react-grid-selected' : ''}
-          onClick={(event) => handleSelect(item.id, event)}
+          className={isSelected(item.i) ? 'react-grid-selected' : ''}
+          onClick={(event) => handleSelect(item.i, event)}
         >
           <div style={{height: '40px'}}>{item.i}</div>
         </div>
