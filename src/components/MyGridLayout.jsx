@@ -60,7 +60,7 @@ const MyGridLayout = () => {
 
         const newLayout = JSON.parse(JSON.stringify(oldLayout)).map(item => {
           if (selectedElementsIdx.includes(item.i)) {
-            item.x += diffX;
+            item.x = item.x + diffX < 0 ? 0 : item.x + diffX;
             item.y += diffY;
           }
 
